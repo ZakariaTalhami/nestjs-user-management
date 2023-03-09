@@ -1,10 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schemas/user.schema';
-import bcrypt from 'bcrypt';
+import { UsersService } from './users.service';
+import { UsersController } from './users.controller';
+import { genSalt, hash } from 'bcrypt';
 
 @Module({
   imports: [
+    // TODO: find a better place to put this functionality
     MongooseModule.forFeatureAsync([
       {
         name: User.name,
@@ -13,14 +16,18 @@ import bcrypt from 'bcrypt';
 
           schema.pre<User>('save', async function () {
             const user = this;
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(user.password, salt);
+            const salt = await genSalt(10);
+            const hashedPassword = await hash(user.password, salt);
 
             user.password = hashedPassword;
           });
+
+          return schema;
         },
       },
     ]),
   ],
+  providers: [UsersService],
+  controllers: [UsersController],
 })
 export class UsersModule {}
