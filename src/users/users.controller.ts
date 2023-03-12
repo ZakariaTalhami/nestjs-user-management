@@ -1,5 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { SignupUserDto } from './dto/create-cate.dto';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
+import { SignupUserDto } from './dto/create-user.dto';
 import { User } from './schemas/user.schema';
 import { UsersService } from './users.service';
 
@@ -8,7 +8,7 @@ export class UsersController {
     constructor(private usersService: UsersService){} 
 
     @Post("signup")
-    async singup(@Body() singupUser: SignupUserDto): Promise<User> {
+    async singup(@Body(new ValidationPipe()) singupUser: SignupUserDto): Promise<User> {
         return this.usersService.signupUser(singupUser);
     }    
 }
