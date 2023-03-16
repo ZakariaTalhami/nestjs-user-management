@@ -17,7 +17,11 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<UserDocument | null> {
     return this.usersModel.findOne({email})
+  }
+
+  async findUserById(userId: string): Promise<UserDocument | null> {
+    return this.usersModel.findById(userId);
   }
 }
