@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from './constants';
 import { MongooseModule } from '@nestjs/mongoose';
 import { userTokenModelFactory } from './schemas/token.schema';
+import { TokenService } from './token.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { userTokenModelFactory } from './schemas/token.schema';
   ],
   providers: [
     AuthService,
+    TokenService,
     LocalStrategy,
     JwtRefreshStrategy,
     JwtStrategy,
