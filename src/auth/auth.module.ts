@@ -6,6 +6,9 @@ import { LocalStrategy, JwtRefreshStrategy, JwtStrategy } from './strategies';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from './constants';
+import { MongooseModule } from '@nestjs/mongoose';
+import { userTokenModelFactory } from './schemas/token.schema';
+import { TokenService } from './token.service';
 
 @Module({
   imports: [
@@ -17,8 +20,15 @@ import { JwtConstants } from './constants';
         signOptions: { expiresIn: JwtConstants.accessTokenExpire },
       }),
     }),
+    MongooseModule.forFeatureAsync([userTokenModelFactory]),
   ],
-  providers: [AuthService, LocalStrategy, JwtRefreshStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    TokenService,
+    LocalStrategy,
+    JwtRefreshStrategy,
+    JwtStrategy,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

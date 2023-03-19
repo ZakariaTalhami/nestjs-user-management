@@ -3,11 +3,13 @@ import { UsersService } from '../users/users.service';
 import { compare as comparePassword } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtConstants } from './constants';
+import { TokenService } from './token.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private tokenService: TokenService,
     private jwtService: JwtService,
   ) {}
 
