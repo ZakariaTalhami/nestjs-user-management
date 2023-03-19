@@ -1,6 +1,6 @@
 import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JWTRefreshAuthGuard, LocalAuthGuard } from './guards';
+import { JwtAuthGuard, JWTRefreshAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -17,5 +17,13 @@ export class AuthController {
   @Post('refresh')
   async refresh(@Request() req) {
     return this.authService.refreshTokens(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('validate')
+  async validate(@Request() req) {
+    return {
+      isValid: true
+    };
   }
 }
