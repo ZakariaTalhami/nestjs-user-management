@@ -1,6 +1,8 @@
 import {
     Body,
     Controller,
+    Delete,
+    HttpCode,
     Param,
     Patch,
     UseGuards,
@@ -22,5 +24,12 @@ export class AppController {
         @Body(new ValidationPipe()) appDto: EditAppDTO,
     ) {
         return this.appService.edit(appId, appDto);
+    }
+
+    @Delete(':appId')
+    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @HttpCode(204)
+    async deleteApp(@Param('appId') appId: string) {
+        this.appService.deleteAppById(appId);
     }
 }

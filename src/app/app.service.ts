@@ -14,12 +14,26 @@ export class AppService {
     }
 
     async getById(appId: string) {
-        return this.appModel.findById(appId);
+        return this.appModel.findOne({
+            id: appId,
+            isActive: true,
+        });
     }
 
     async edit(appId: string, appDto: EditAppDTO) {
         return this.appModel.findOneAndUpdate({ id: appId }, appDto, {
             new: true,
         });
+    }
+
+    async deleteAppById(appId: string) {
+        await this.appModel.findOneAndUpdate(
+            {
+                id: appId,
+            },
+            {
+                isActive: false,
+            },
+        );
     }
 }
