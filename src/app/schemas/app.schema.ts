@@ -14,7 +14,7 @@ export class App {
         required: true,
         index: true,
     })
-    owner: User;
+    owner: string;
 
     @Prop({
         index: true,
