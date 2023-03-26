@@ -8,5 +8,6 @@ import { AppService } from './app.service';
         MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
     ],
     providers: [AppService],
+    exports: [AppService],
 })
 export class AppModule {}
