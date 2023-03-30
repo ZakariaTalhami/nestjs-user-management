@@ -33,6 +33,11 @@ export class AppService {
                 name: true,
                 isActive: true
             },
+            {
+                sort: {
+                    name: -1
+                }
+            }
         );
     }
 
