@@ -28,6 +28,6 @@ export class OnlyOwner implements CanActivate {
             throw new NotFoundException(`App [${appId}] Not found`);
         }
 
-        return app.owner === userId;
+        return app.owner.toString() === userId;
     }
 }

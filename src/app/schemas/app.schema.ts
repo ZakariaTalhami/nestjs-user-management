@@ -10,11 +10,11 @@ export type AppDocument = HydratedDocument<App>;
 export class App {
     @Prop({
         type: Types.ObjectId,
-        ref: 'User',
+        ref: User.name,
         required: true,
         index: true,
     })
-    owner: string;
+    owner: Types.ObjectId;
 
     @Prop({
         index: true,
@@ -23,12 +23,12 @@ export class App {
     name: string;
 
     @Prop({
-        type: [Types.ObjectId],
-        ref: 'User',
+        type: [String],
+        ref: User.name,
         index: true,
         default: [],
     })
-    users: User[];
+    users: string[];
 
     @Prop({
         default: true,

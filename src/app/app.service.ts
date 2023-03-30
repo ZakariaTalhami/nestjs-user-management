@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateAppDto } from './dtos/create-app';
-import { EditAppDTO } from './dtos/edi-app';
+import { EditAppDTO } from './dtos/edit-app';
 import { App, AppDocument } from './schemas/app.schema';
 
 @Injectable()
@@ -18,6 +18,21 @@ export class AppService {
             id: appId,
             isActive: true,
         });
+    }
+
+    async findAllUserApps(userId: string) {
+        return this.appModel.find(
+            {
+                $or: [
+                    { owner: userId },
+                    { users: new Types.ObjectId(userId) },
+                ],
+            },
+            {
+                _id: true,
+                name: true,
+            },
+        );
     }
 
     async edit(appId: string, appDto: EditAppDTO) {
