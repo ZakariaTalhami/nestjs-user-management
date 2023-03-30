@@ -20,7 +20,7 @@ export class UsersService {
         }
 
         const createdUser = await this.usersModel.create(userDto);
-        this.appService.create({ owner: createdUser.id });
+        this.appService.create({ owner: createdUser._id });
         return createdUser;
     }
 
