@@ -31,6 +31,7 @@ export class AppService {
             {
                 _id: true,
                 name: true,
+                isActive: true
             },
         );
     }
