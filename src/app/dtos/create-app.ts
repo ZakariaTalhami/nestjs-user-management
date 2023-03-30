@@ -1,6 +1,20 @@
-import { Types } from "mongoose";
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class CreateAppDto {
+    @IsString()
     name?: string;
-    owner: Types.ObjectId
+    @IsString()
+    @IsMongoId()
+    owner: Types.ObjectId;
+}
+
+export class CreateSecondaryAppDto {
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @IsMongoId()
+    @IsOptional()
+    owner: Types.ObjectId;
 }

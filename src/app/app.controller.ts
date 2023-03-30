@@ -6,12 +6,14 @@ import {
     HttpCode,
     Param,
     Patch,
+    Post,
     Request,
     UseGuards,
     ValidationPipe,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards';
 import { AppService } from './app.service';
+import { CreateSecondaryAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
 import { OnlyOwner } from './guards';
 
@@ -19,10 +21,20 @@ import { OnlyOwner } from './guards';
 export class AppController {
     constructor(private appService: AppService) {}
 
-    @Get("")
+    @Get('')
     @UseGuards(JwtAuthGuard)
     async getUsersApps(@Request() req) {
         return this.appService.findAllUserApps(req.user.id);
+    }
+
+    @Post('')
+    @UseGuards(JwtAuthGuard)
+    async createNewApp(
+        @Request() req,
+        @Body(new ValidationPipe()) createAppDto: CreateSecondaryAppDto,
+    ) {
+        createAppDto.owner = req.user.id;
+        return this.appService.create(createAppDto);
     }
 
     @Patch(':appId')
