@@ -15,3 +15,9 @@ export class JwtConstants {
     return process.env.REFRESH_TOKEN_EXPIRE;
   }
 }
+
+export class SecurityConstants {
+  public static get apiKey(): string {
+    return process.env.API_KEY;
+  }
+}
