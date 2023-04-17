@@ -29,4 +29,8 @@ export class PermissionService {
     ): Promise<PermissionDocument | null> {
         return this.permissionModel.findOne({ name });
     }
+
+    async getPermissionList() {
+        return this.permissionModel.find({});
+    }
 }
