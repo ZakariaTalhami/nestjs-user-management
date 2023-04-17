@@ -12,7 +12,6 @@ export class Permission {
     name: string;
 
     @Prop({
-        unique: true,
         index: true,
         required: true,
         enum: Object.values(Resource),
