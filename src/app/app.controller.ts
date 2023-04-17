@@ -15,6 +15,7 @@ import { JwtAuthGuard } from 'src/auth/guards';
 import { AppService } from './app.service';
 import { CreateSecondaryAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
+import { InviteUserToAppDto } from './dtos/invite-user.dto';
 import { OnlyOwner } from './guards';
 
 @Controller('app')
@@ -35,6 +36,15 @@ export class AppController {
     ) {
         createAppDto.owner = req.user.id;
         return this.appService.create(createAppDto);
+    }
+
+    @Post(':appId/users')
+    @UseGuards(JwtAuthGuard, OnlyOwner)
+    async inviteUser(
+        @Param('appId') appId: string,
+        @Body(new ValidationPipe()) appDto: InviteUserToAppDto,
+    ) {
+        return this.appService.inviteUserToApp(appId, appDto);
     }
 
     @Patch(':appId')

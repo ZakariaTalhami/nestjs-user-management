@@ -23,12 +23,12 @@ export class App {
     name: string;
 
     @Prop({
-        type: [String],
+        type: [Types.ObjectId],
         ref: User.name,
         index: true,
         default: [],
     })
-    users: string[];
+    users: Types.ObjectId[];
 
     @Prop({
         default: true,
