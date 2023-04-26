@@ -1,6 +1,7 @@
 import {
     Controller,
     Post,
+    Get,
     Body,
     ValidationPipe,
     UseGuards,
@@ -33,5 +34,11 @@ export class RoleController {
     ) {
         createAppRoleDto.app = new Types.ObjectId(appId);
         return this.roleService.createRole(createAppRoleDto);
+    }
+
+    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @Get('app/:appId')
+    async getAppRoles(@Param('appId') appId: string) {
+        return this.roleService.getAppRoles(appId);
     }
 }

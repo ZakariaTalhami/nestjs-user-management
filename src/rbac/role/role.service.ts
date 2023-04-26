@@ -1,6 +1,6 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { RoleType } from 'src/common/enums';
 import { Role, RoleDocument } from '../schemas/role.schema';
 import { CreateSystemRoleDto } from './dtos/create-role.dto';
@@ -32,5 +32,19 @@ export class RoleService {
 
     async getRoleByName(name: string): Promise<RoleDocument | null> {
         return this.roleModel.findOne({ name });
+    }
+
+    async getAppRoles(appId: string) {
+        return this.roleModel.find({
+            $or: [
+                {
+                    type: RoleType.SYSTEM_SCOPE,
+                },
+                {
+                    type: RoleType.APP_SCOPE,
+                    app: new Types.ObjectId(appId),
+                },
+            ],
+        });
     }
 }
