@@ -12,6 +12,9 @@ export type RoleDocument = HydratedDocument<Role>;
 export class Role {
     @Prop({ unique: true, index: true, required: true })
     name: string;
+    
+    @Prop({ unique: true, index: true, required: true })
+    displayName: string;
 
     @Prop({
         type: [Types.ObjectId],

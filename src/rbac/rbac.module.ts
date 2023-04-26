@@ -4,6 +4,8 @@ import { Permission, PermissionSchema } from './schemas/permission.schema';
 import { PermissionController } from './permission/permission.controller';
 import { PermissionService } from './permission/permission.service';
 import { Role, RoleSchema } from './schemas/role.schema';
+import { RoleController } from './role/role.controller';
+import { RoleService } from './role/role.service';
 
 @Module({
     imports: [
@@ -12,7 +14,7 @@ import { Role, RoleSchema } from './schemas/role.schema';
             { name: Role.name, schema: RoleSchema },
         ]),
     ],
-    controllers: [PermissionController],
-    providers: [PermissionService],
+    controllers: [PermissionController, RoleController],
+    providers: [PermissionService, RoleService],
 })
 export class RbacModule {}
