@@ -2,6 +2,7 @@ import {
     Controller,
     Post,
     Get,
+    Patch,
     Body,
     ValidationPipe,
     UseGuards,
@@ -12,6 +13,7 @@ import { OnlyOwner } from 'src/app/guards';
 import { JwtAuthGuard } from 'src/auth/guards';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { CreateSystemRoleDto } from './dtos/create-role.dto';
+import { UpdateRoleDto } from './dtos/update-app-role.dto';
 import { RoleService } from './role.service';
 
 @Controller('rbac/role')
@@ -40,5 +42,15 @@ export class RoleController {
     @Get('app/:appId')
     async getAppRoles(@Param('appId') appId: string) {
         return this.roleService.getAppRoles(appId);
+    }
+
+    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @Patch(':roleId/app/:appId')
+    async updateAppRole(
+        @Param('roleId') roleId: string,
+        @Param('appId') appId: string,
+        @Body(new ValidationPipe()) updateAppRoleDto: UpdateRoleDto,
+    ) {
+        return this.roleService.updateAppRoles(roleId, appId, updateAppRoleDto);
     }
 }
