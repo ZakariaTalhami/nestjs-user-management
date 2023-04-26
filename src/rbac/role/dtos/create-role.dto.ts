@@ -12,14 +12,14 @@ export class CreateSystemRoleDto {
     @IsString()
     @IsNotEmpty()
     name: string;
-    
+
     @IsString()
     @IsNotEmpty()
     displayName: string;
 
     @IsArray()
     @ArrayNotEmpty()
-    @IsMongoId({each: true})
+    @IsMongoId({ each: true })
     permissions: Types.ObjectId[];
 
     @IsMongoId()
