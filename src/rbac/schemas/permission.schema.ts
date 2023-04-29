@@ -17,6 +17,11 @@ export class Permission {
         enum: Object.values(Resource),
     })
     resource: string;
+
+    @Prop({
+        default: ""
+    })
+    description: string
 }
 
 export const PermissionSchema = SchemaFactory.createForClass(Permission);

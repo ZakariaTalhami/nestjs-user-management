@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsIn } from 'class-validator';
+import { IsNotEmpty, IsString, IsIn, IsOptional } from 'class-validator';
 import { Resource } from 'src/common/enums';
 
 export class CreatePermissionDto {
@@ -9,4 +9,9 @@ export class CreatePermissionDto {
     @IsString()
     @IsIn(Object.values(Resource))
     resource: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    description: string;
 }
