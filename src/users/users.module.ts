@@ -4,6 +4,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { genSalt, hash } from 'bcrypt';
+import { AppModule } from 'src/app/app.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { genSalt, hash } from 'bcrypt';
         },
       },
     ]),
+    AppModule
   ],
   providers: [UsersService],
   exports: [UsersService],
