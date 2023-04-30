@@ -97,4 +97,9 @@ export class RoleService {
             },
         );
     }
+
+    async deleteAppRole(roleId: string, appId: string) {
+        const role = await this.getAppRoleByIdOrThrow(appId, roleId);
+        return role.delete();
+    }
 }
