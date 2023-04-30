@@ -17,6 +17,11 @@ export class CreateSystemRoleDto {
     @IsNotEmpty()
     displayName: string;
 
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    description: string;
+
     @IsArray()
     @ArrayNotEmpty()
     @IsMongoId({ each: true })
