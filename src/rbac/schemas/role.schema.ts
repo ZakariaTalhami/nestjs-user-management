@@ -17,6 +17,11 @@ export class Role {
     displayName: string;
 
     @Prop({
+        default: ""
+    })
+    description: string
+
+    @Prop({
         type: [Types.ObjectId],
         ref: Permission.name,
         index: true,

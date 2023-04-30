@@ -14,6 +14,11 @@ export class UpdateRoleDto {
     @IsNotEmpty()
     @IsOptional()
     name: string;
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    description: string;
     
     @IsString()
     @IsNotEmpty()

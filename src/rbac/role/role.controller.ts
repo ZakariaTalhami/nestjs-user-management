@@ -7,6 +7,7 @@ import {
     ValidationPipe,
     UseGuards,
     Param,
+    Delete,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { OnlyOwner } from 'src/app/guards';
@@ -52,5 +53,14 @@ export class RoleController {
         @Body(new ValidationPipe()) updateAppRoleDto: UpdateRoleDto,
     ) {
         return this.roleService.updateAppRoles(roleId, appId, updateAppRoleDto);
+    }
+
+    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @Delete(':roleId/app/:appId')
+    async deleteAppRole(
+        @Param('roleId') roleId: string,
+        @Param('appId') appId: string
+    ) {
+        return this.roleService.deleteAppRole(roleId, appId);
     }
 }
