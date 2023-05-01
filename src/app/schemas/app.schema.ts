@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { User } from 'src/users/schemas/user.schema';
+import { AppUser, AppUserSchema } from './app-user.schema';
 
 export type AppDocument = HydratedDocument<App>;
 
@@ -23,12 +24,10 @@ export class App {
     name: string;
 
     @Prop({
-        type: [Types.ObjectId],
-        ref: User.name,
-        index: true,
+        type: [AppUserSchema],
         default: [],
     })
-    users: Types.ObjectId[];
+    users: AppUser[];
 
     @Prop({
         default: true,
