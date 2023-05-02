@@ -41,10 +41,11 @@ export class AppController {
     @Post(':appId/users')
     @UseGuards(JwtAuthGuard, OnlyOwner)
     async inviteUser(
+        @Request() req,
         @Param('appId') appId: string,
         @Body(new ValidationPipe()) appDto: InviteUserToAppDto,
     ) {
-        return this.appService.inviteUserToApp(appId, appDto);
+        return this.appService.inviteUserToApp(appId, appDto, req.user.id);
     }
 
     @Patch(':appId')

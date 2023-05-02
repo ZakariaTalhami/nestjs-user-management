@@ -1,6 +1,7 @@
 import {
     Injectable,
     NotFoundException,
+    BadRequestException,
     Inject,
     forwardRef,
 } from '@nestjs/common';
@@ -62,19 +63,30 @@ export class AppService {
         );
     }
 
-    async inviteUserToApp(appId: string, appDto: InviteUserToAppDto) {
+    async inviteUserToApp(
+        appId: string,
+        appDto: InviteUserToAppDto,
+        inviter: string,
+    ) {
         const app = await this.getByIdOrThrow(appId);
         const user = await this.usersService.findUserByEmailOrThrow(
             appDto.email,
         );
 
-        const appNewUserSet = new Set([
-            ...app.users.map((user) => user.toString()),
-            user.id,
-        ]);
-        app.users = Array.from(appNewUserSet).map(
-            (id) => new Types.ObjectId(id),
+        const existingUser = app.users.find(
+            (appUser) => appUser.user.toString() === user.id,
         );
+
+        if (existingUser)
+            throw new BadRequestException(
+                `User [${user.email}] Already Exists on App [${app.name}]`,
+            );
+
+        app.users.push({
+            user: user._id,
+            role: new Types.ObjectId(appDto.role),
+            inviter: new Types.ObjectId(inviter),
+        });
 
         return app.save();
     }

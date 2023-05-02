@@ -32,7 +32,7 @@ export class AppUser {
     @Prop({
         default: Date.now
     })
-    addedDate: Date
+    addedDate?: Date
 }
 
 export const AppUserSchema = SchemaFactory.createForClass(AppUser);
