@@ -47,7 +47,7 @@ export class AppService {
             {
                 $or: [
                     { owner: new Types.ObjectId(userId) },
-                    { users: new Types.ObjectId(userId) },
+                    { "users.user": new Types.ObjectId(userId) },
                 ],
             },
             {
