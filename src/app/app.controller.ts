@@ -11,6 +11,7 @@ import {
     UseGuards,
     ValidationPipe,
 } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/auth/guards';
 import { AppService } from './app.service';
 import { CreateSecondaryAppDto } from './dtos/create-app';
@@ -34,7 +35,7 @@ export class AppController {
         @Request() req,
         @Body(new ValidationPipe()) createAppDto: CreateSecondaryAppDto,
     ) {
-        createAppDto.owner = req.user.id;
+        createAppDto.owner = new Types.ObjectId(req.user.id);
         return this.appService.create(createAppDto);
     }
 
