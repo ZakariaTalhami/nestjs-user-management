@@ -44,6 +44,13 @@ export class Invite {
         type: Date
     })
     acceptedDate?: Date
+
+    @Prop({
+        type: Types.ObjectId,
+        ref: 'users',
+        index: true,
+    })
+    user?: Types.ObjectId
 }
 
 export const InviteSchema = SchemaFactory.createForClass(Invite);

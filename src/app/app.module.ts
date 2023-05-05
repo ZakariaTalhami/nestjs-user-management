@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AppController } from './app.controller';
 import { UsersModule } from 'src/users/users.module';
 import { Invite, InviteSchema } from './schemas/invite.schema';
+import { InviteService } from './invite.service';
 
 @Module({
     imports: [
@@ -14,7 +15,7 @@ import { Invite, InviteSchema } from './schemas/invite.schema';
         ]),
         forwardRef(() => UsersModule),
     ],
-    providers: [AppService],
+    providers: [AppService, InviteService],
     exports: [AppService],
     controllers: [AppController],
 })
