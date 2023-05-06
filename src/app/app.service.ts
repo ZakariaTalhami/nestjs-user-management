@@ -71,9 +71,10 @@ export class AppService {
         inviter: string,
     ) {
         const app = await this.getByIdOrThrow(appId);
-        const user = await this.usersService.findUserByEmailOrThrow(
+        const user = await this.usersService.findUserByEmail(
             appDto.email,
         );
+        const inviterUser = await this.usersService.findUserById(inviter);
         let invitation = await this.inviteService.getInvitationByEmailAndApp(
             app.id,
             appDto.email,
@@ -81,7 +82,7 @@ export class AppService {
 
 
         const existingUser = app.users.find(
-            (appUser) => appUser.user?.toString() === user.id,
+            (appUser) => user && appUser.user?.toString() === user.id,
         );
 
         if (existingUser)
@@ -90,7 +91,7 @@ export class AppService {
             );
 
         if (!invitation) {
-            const invitation = await this.inviteService.create({
+            invitation = await this.inviteService.create({
                 app: app._id,
                 email: appDto.email,
                 role: new Types.ObjectId(appDto.role),
@@ -108,8 +109,7 @@ export class AppService {
             await this.inviteService.refreshInvitationExpire(invitation.id);
         }
 
-        //TODO: Send Invitation Email
-        // this.inviteService.sendInvitationEmail(invitation);
+        await this.inviteService.sendInvitationEmail(invitation, inviterUser.email, app.name);
 
         return app;
     }
