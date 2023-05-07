@@ -30,6 +30,10 @@ export class InviteService {
         });
     }
 
+    async findInvitationById(inviteId: string) {
+        return this.inviteModel.findById(inviteId);
+    }
+
     async refreshInvitationExpire(id: string) {
         return this.inviteModel.findByIdAndUpdate(id, {
             expire: DateTime.now().plus({ days: 14 }).toJSDate(),
@@ -61,5 +65,11 @@ export class InviteService {
                 expiresIn: InvitationConstants.invitationExpire,
             },
         );
+    }
+
+    decodeInvitationService(token: string) {
+        return this.jwtService.verify(token, {
+            secret: InvitationConstants.invitationTokenSecret,
+        });
     }
 }

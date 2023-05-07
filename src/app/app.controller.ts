@@ -18,6 +18,7 @@ import { CreateSecondaryAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
 import { InviteUserToAppDto } from './dtos/invite-user.dto';
 import { OnlyOwner } from './guards';
+import { InvitationTokenAuth } from './guards/invitation-token-auth.guard';
 
 @Controller('app')
 export class AppController {
@@ -47,6 +48,15 @@ export class AppController {
         @Body(new ValidationPipe()) appDto: InviteUserToAppDto,
     ) {
         return this.appService.inviteUserToApp(appId, appDto, req.user.id);
+    }
+
+    @Post('invite/accept')
+    @UseGuards(JwtAuthGuard, InvitationTokenAuth)
+    async acceptUserInvitation(@Request() req) {
+        return this.appService.acceptUserInvitation(
+            req.user.id,
+            req.invite.id,
+        );
     }
 
     @Patch(':appId')

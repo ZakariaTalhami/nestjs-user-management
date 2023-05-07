@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { AppUserStatus } from 'src/common/enums';
 import { UsersService } from 'src/users/users.service';
 import { CreateAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
@@ -71,15 +72,12 @@ export class AppService {
         inviter: string,
     ) {
         const app = await this.getByIdOrThrow(appId);
-        const user = await this.usersService.findUserByEmail(
-            appDto.email,
-        );
+        const user = await this.usersService.findUserByEmail(appDto.email);
         const inviterUser = await this.usersService.findUserById(inviter);
         let invitation = await this.inviteService.getInvitationByEmailAndApp(
             app.id,
             appDto.email,
         );
-
 
         const existingUser = app.users.find(
             (appUser) => user && appUser.user?.toString() === user.id,
@@ -109,9 +107,42 @@ export class AppService {
             await this.inviteService.refreshInvitationExpire(invitation.id);
         }
 
-        await this.inviteService.sendInvitationEmail(invitation, inviterUser.email, app.name);
+        await this.inviteService.sendInvitationEmail(
+            invitation,
+            inviterUser.email,
+            app.name,
+        );
 
         return app;
+    }
+
+    async acceptUserInvitation(
+        userId: string,
+        inviteId: string,
+    ) {
+        const user = await this.usersService.findUserById(userId);
+        const invitation = await this.inviteService.findInvitationById(
+            inviteId,
+            );
+        const app = await this.getByIdOrThrow(invitation.app.toString());
+
+        if (
+            !invitation ||
+            invitation.email !== user.email ||
+            invitation.isAccepted
+        ) {
+            throw new BadRequestException('Invalid Invitation Token');
+        }
+
+        invitation.isAccepted = true;
+        invitation.acceptedDate = new Date();
+        invitation.user = user._id;
+
+        const appUserIndex = app.users.findIndex(user => user.invitation.toString() === inviteId);
+        app.users[appUserIndex].status = AppUserStatus.ACCEPTED;
+        app.users[appUserIndex].user = user._id;
+
+        await Promise.all([app.save(), invitation.save()]);
     }
 
     async edit(appId: string, appDto: EditAppDTO) {
