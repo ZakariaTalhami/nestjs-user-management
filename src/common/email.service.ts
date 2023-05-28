@@ -11,12 +11,6 @@ export class EmailService {
     }
 
     async sendEmailTemplate(templateId: string, toEmail: string, data: any) {
-        console.log({
-            from: 'zakaria.a.a.talhami@gmail.com',
-            to: toEmail,
-            dynamicTemplateData: data,
-            templateId,
-        });
         return this.emailClient.send({
             from: 'zakaria.a.a.talhami@gmail.com',
             to: toEmail,
