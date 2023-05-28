@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { compare as comparePassword } from 'bcrypt';
 import { Model } from 'mongoose';
 import { JwtConstants } from './constants';
 import { UserTokenType } from './enums';
@@ -53,6 +52,12 @@ export class TokenService {
           secret: JwtConstants.refreshTokenSecret,
           expiresIn: JwtConstants.refreshTokenExpire,
         };
+        break;
+      case UserTokenType.RESET_PASSWORD:
+        tokenConfig = {
+          secret: JwtConstants.ResetPasswordTokenSecret,
+          expiresIn: JwtConstants.ResetPasswordTokenExpire,
+        }
         break;
     }
 

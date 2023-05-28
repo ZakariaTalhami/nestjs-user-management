@@ -9,6 +9,7 @@ import { JwtConstants } from './constants';
 import { MongooseModule } from '@nestjs/mongoose';
 import { userTokenModelFactory } from './schemas/token.schema';
 import { TokenService } from './token.service';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TokenService } from './token.service';
       }),
     }),
     MongooseModule.forFeatureAsync([userTokenModelFactory]),
+    CommonModule,
   ],
   providers: [
     AuthService,
