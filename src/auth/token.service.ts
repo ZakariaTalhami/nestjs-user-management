@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { HashUtils } from 'src/common/utils';
 import { JwtConstants } from './constants';
 import { UserTokenType } from './enums';
 import { UserToken, UserTokenDocument } from './schemas/token.schema';
@@ -39,6 +40,28 @@ export class TokenService {
       user,
       token,
       tokenType,
+    });
+  }
+
+  async getToken(
+    token: string,
+    tokenType: UserTokenType,
+    isActive: boolean = true
+  ): Promise<UserTokenDocument | null> {
+    const hashedToken = HashUtils.hashToken(token);
+    return this.userTokenModel.findOne({
+      token: hashedToken,
+      tokenType,
+      isActive,
+    });
+  }
+
+  async deactivateToken(token: string) {
+    const hashedToken = HashUtils.hashToken(token);
+    return this.userTokenModel.findOneAndUpdate({
+        token: hashedToken
+      }, {
+        isActive: false
     });
   }
 

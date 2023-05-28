@@ -13,13 +13,13 @@ import { EmailService } from 'src/common/email.service';
 
 @Injectable()
 export class AuthService {
-    constructor(
+  constructor(
         private usersService: UsersService,
         private tokenService: TokenService,
         private jwtService: JwtService,
-        private emailService: EmailService,
+        private emailService: EmailService
     ) {}
-
+    
     async validateUser(email: string, password: string) {
         const user = await this.usersService.findUserByEmail(email);
 
@@ -71,8 +71,9 @@ export class AuthService {
         }
     }
 
-    async resetPassword(userId: string, resetPasswordDto: ResetPasswordDto) {
+    async resetPassword(userId: string, token: string, resetPasswordDto: ResetPasswordDto) {
         await this.usersService.resetPasswordById(userId, resetPasswordDto.password);
+        await this.tokenService.deactivateToken(token);
     }
 
     private generateTokens(payload: any) {

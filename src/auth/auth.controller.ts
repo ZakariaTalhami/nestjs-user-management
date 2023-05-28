@@ -1,11 +1,14 @@
 import { Controller, Post, Request, UseGuards, Body, ValidationPipe } from '@nestjs/common';
+import { ExtractJwt } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto, ResetPasswordDto } from './dtos/forgot-password.dto';
 import { JWTRefreshAuthGuard, JWTResetPasswordAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService){}
+  private extractJwt = ExtractJwt.fromAuthHeaderAsBearerToken();
+
+  constructor(private authService: AuthService){}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -35,7 +38,8 @@ export class AuthController {
     @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
     @Request() req
   ) {
-    await this.authService.resetPassword(req.user.id, resetPasswordDto);
+    const token = this.extractJwt(req)
+    await this.authService.resetPassword(req.user.id, token, resetPasswordDto);
     return {
       message: "Your password has been Reset Successfully"
     }

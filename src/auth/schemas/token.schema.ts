@@ -6,12 +6,15 @@ import {
 } from '@nestjs/mongoose';
 import { genSalt, hash } from 'bcrypt';
 import { HydratedDocument, Types } from 'mongoose';
+import { HashUtils } from 'src/common/utils';
 import { User } from 'src/users/schemas/user.schema';
 import { UserTokenType } from '../enums';
 
 export type UserTokenDocument = HydratedDocument<UserToken>;
 
-@Schema()
+@Schema({
+  timestamps: true
+})
 export class UserToken {
   @Prop({
     type: Types.ObjectId,
@@ -48,8 +51,7 @@ export const userTokenModelFactory: AsyncModelFactory = {
 
     schema.pre<UserToken>('save', async function () {
       const user = this;
-      const salt = await genSalt(10);
-      const hashedToken = await hash(user.token, salt);
+      const hashedToken = HashUtils.hashToken(user.token);
 
       user.token = hashedToken;
     });
