@@ -1,7 +1,7 @@
 import { Controller, Post, Request, UseGuards, Body, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ForgotPasswordDto } from './dtos/forgot-password.dto';
-import { JWTRefreshAuthGuard, LocalAuthGuard } from './guards';
+import { ForgotPasswordDto, ResetPasswordDto } from './dtos/forgot-password.dto';
+import { JWTRefreshAuthGuard, JWTResetPasswordAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +26,18 @@ export class AuthController {
     await this.authService.forgotPassword(forgotPasswordDto);
     return {
       message: "Reset Password Email Sent. Please Check your Inbox."
+    }
+  }
+
+  @Post('reset-password')
+  @UseGuards(JWTResetPasswordAuthGuard)
+  async resetPassword(
+    @Body(new ValidationPipe()) resetPasswordDto: ResetPasswordDto,
+    @Request() req
+  ) {
+    await this.authService.resetPassword(req.user.id, resetPasswordDto);
+    return {
+      message: "Your password has been Reset Successfully"
     }
   }
 }

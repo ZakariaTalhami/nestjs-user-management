@@ -41,4 +41,8 @@ export class UsersService {
     async findUserById(userId: string): Promise<UserDocument | null> {
         return this.usersModel.findById(userId);
     }
+
+    async resetPasswordById(userId: string, password: string) {
+        return this.usersModel.findByIdAndUpdate(userId, { password })
+    }
 }

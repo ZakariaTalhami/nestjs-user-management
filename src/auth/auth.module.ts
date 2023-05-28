@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from 'src/users/users.module';
 import { AuthService } from './auth.service';
-import { LocalStrategy, JwtRefreshStrategy, JwtStrategy } from './strategies';
+import { LocalStrategy, JwtRefreshStrategy, JwtStrategy, JwtResetPasswordStrategy } from './strategies';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConstants } from './constants';
@@ -30,6 +30,7 @@ import { CommonModule } from 'src/common/common.module';
     LocalStrategy,
     JwtRefreshStrategy,
     JwtStrategy,
+    JwtResetPasswordStrategy,
   ],
   controllers: [AuthController],
 })

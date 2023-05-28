@@ -5,6 +5,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { genSalt, hash } from 'bcrypt';
 import { AppModule } from 'src/app/app.module';
+import { Query, UpdateQuery } from 'mongoose';
 
 @Module({
   imports: [
@@ -21,6 +22,17 @@ import { AppModule } from 'src/app/app.module';
             const hashedPassword = await hash(user.password, salt);
 
             user.password = hashedPassword;
+          });
+
+          schema.pre<UpdateQuery<User>>('findOneAndUpdate', async function () {
+            const update = this.getUpdate();
+            if(update.password) {
+              const salt = await genSalt(10);
+              const hashedPassword = await hash(update.password, salt);
+  
+              update.password = hashedPassword;
+            }
+            this.setUpdate(update)
           });
 
           return schema;

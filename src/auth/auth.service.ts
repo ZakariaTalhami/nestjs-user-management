@@ -4,7 +4,10 @@ import { compare as comparePassword } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtConstants, ResetPasswordConstants } from './constants';
 import { TokenService } from './token.service';
-import { ForgotPasswordDto } from './dtos/forgot-password.dto';
+import {
+    ForgotPasswordDto,
+    ResetPasswordDto,
+} from './dtos/forgot-password.dto';
 import { UserTokenType } from './enums';
 import { EmailService } from 'src/common/email.service';
 
@@ -59,11 +62,17 @@ export class AuthService {
             );
 
             this.emailService.sendEmailTemplate(
-              ResetPasswordConstants.ResetPasswordEmailTemplate,
-              userRecord.email,
-              {resetUrl: `${ResetPasswordConstants.ResetPasswordBaseUrl}?inviteToken=${resetPasswordToken}`,}
-            )
+                ResetPasswordConstants.ResetPasswordEmailTemplate,
+                userRecord.email,
+                {
+                    resetUrl: `${ResetPasswordConstants.ResetPasswordBaseUrl}?resetToken=${resetPasswordToken}`,
+                },
+            );
         }
+    }
+
+    async resetPassword(userId: string, resetPasswordDto: ResetPasswordDto) {
+        await this.usersService.resetPasswordById(userId, resetPasswordDto.password);
     }
 
     private generateTokens(payload: any) {
