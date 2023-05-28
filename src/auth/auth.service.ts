@@ -1,8 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { compare as comparePassword } from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { JwtConstants, ResetPasswordConstants } from './constants';
+import { ResetPasswordConstants } from './constants';
 import { TokenService } from './token.service';
 import {
     ForgotPasswordDto,
@@ -16,7 +15,6 @@ export class AuthService {
   constructor(
         private usersService: UsersService,
         private tokenService: TokenService,
-        private jwtService: JwtService,
         private emailService: EmailService
     ) {}
     
@@ -36,7 +34,7 @@ export class AuthService {
 
     async login(user: any) {
         const payload = { sub: user.id };
-        return this.generateTokens(payload);
+        return this.tokenService.generateTokens(user.id, payload);
     }
 
     async refreshTokens(user: any) {
@@ -45,8 +43,9 @@ export class AuthService {
         if (!userRecord) {
             throw new UnauthorizedException();
         }
+
         const payload = { sub: user.id };
-        return this.generateTokens(payload);
+        return this.tokenService.generateTokens(user.id, payload);
     }
 
     async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
@@ -74,15 +73,5 @@ export class AuthService {
     async resetPassword(userId: string, token: string, resetPasswordDto: ResetPasswordDto) {
         await this.usersService.resetPasswordById(userId, resetPasswordDto.password);
         await this.tokenService.deactivateToken(token);
-    }
-
-    private generateTokens(payload: any) {
-        return {
-            access_token: this.jwtService.sign(payload),
-            refresh_token: this.jwtService.sign(payload, {
-                secret: JwtConstants.refreshTokenSecret,
-                expiresIn: JwtConstants.refreshTokenExpire,
-            }),
-        };
     }
 }
