@@ -10,9 +10,11 @@ import {
     Delete,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { OnlyOwner } from 'src/app/guards';
 import { JwtAuthGuard } from 'src/auth/guards';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+import { RequirePermissions } from '../decorators';
+import { Authorize } from '../guards';
+import { Permissions } from '../permission/enums';
 import { CreateSystemRoleDto } from './dtos/create-role.dto';
 import { UpdateRoleDto } from './dtos/update-app-role.dto';
 import { RoleService } from './role.service';
@@ -29,7 +31,8 @@ export class RoleController {
         return this.roleService.createRole(createSystemRoleDto);
     }
 
-    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @RequirePermissions(Permissions.ROLE_CREATE)
+    @UseGuards(JwtAuthGuard, Authorize)
     @Post('app/:appId')
     async createAppRole(
         @Param('appId') appId: string,
@@ -39,13 +42,15 @@ export class RoleController {
         return this.roleService.createRole(createAppRoleDto);
     }
 
-    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @RequirePermissions(Permissions.ROLE_READ)
+    @UseGuards(JwtAuthGuard, Authorize)
     @Get('app/:appId')
     async getAppRoles(@Param('appId') appId: string) {
         return this.roleService.getAppRoles(appId);
     }
 
-    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @RequirePermissions(Permissions.ROLE_EDIT)
+    @UseGuards(JwtAuthGuard, Authorize)
     @Patch(':roleId/app/:appId')
     async updateAppRole(
         @Param('roleId') roleId: string,
@@ -55,7 +60,8 @@ export class RoleController {
         return this.roleService.updateAppRoles(roleId, appId, updateAppRoleDto);
     }
 
-    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @RequirePermissions(Permissions.ROLE_DELETE)
+    @UseGuards(JwtAuthGuard, Authorize)
     @Delete(':roleId/app/:appId')
     async deleteAppRole(
         @Param('roleId') roleId: string,
