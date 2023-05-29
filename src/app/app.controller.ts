@@ -20,7 +20,6 @@ import { AppService } from './app.service';
 import { CreateSecondaryAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
 import { InviteUserToAppDto } from './dtos/invite-user.dto';
-import { OnlyOwner } from './guards';
 import { InvitationTokenAuth } from './guards/invitation-token-auth.guard';
 
 @Controller('app')
@@ -44,7 +43,8 @@ export class AppController {
     }
 
     @Post(':appId/users')
-    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @RequirePermissions(Permissions.USER_INVITE)
+    @UseGuards(JwtAuthGuard, Authorize)
     async inviteUser(
         @Request() req,
         @Param('appId') appId: string,
