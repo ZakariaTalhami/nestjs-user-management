@@ -146,7 +146,7 @@ export class AppService {
     }
 
     async edit(appId: string, appDto: EditAppDTO) {
-        return this.appModel.findOneAndUpdate({ id: appId }, appDto, {
+        return this.appModel.findOneAndUpdate({ _id: new Types.ObjectId(appId) }, appDto, {
             new: true,
         });
     }
@@ -154,7 +154,7 @@ export class AppService {
     async deleteAppById(appId: string) {
         await this.appModel.findOneAndUpdate(
             {
-                id: appId,
+                _id: new Types.ObjectId(appId)
             },
             {
                 isActive: false,
