@@ -13,6 +13,9 @@ import {
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { JwtAuthGuard } from 'src/auth/guards';
+import { RequirePermissions } from 'src/rbac/decorators';
+import { Authorize } from 'src/rbac/guards';
+import { Permissions } from 'src/rbac/permission/enums';
 import { AppService } from './app.service';
 import { CreateSecondaryAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
@@ -60,7 +63,8 @@ export class AppController {
     }
 
     @Patch(':appId')
-    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @RequirePermissions(Permissions.APP_EDIT)
+    @UseGuards(JwtAuthGuard, Authorize)
     async editApp(
         @Param('appId') appId: string,
         @Body(new ValidationPipe()) appDto: EditAppDTO,
@@ -69,7 +73,8 @@ export class AppController {
     }
 
     @Delete(':appId')
-    @UseGuards(JwtAuthGuard, OnlyOwner)
+    @RequirePermissions(Permissions.APP_DELETE)
+    @UseGuards(JwtAuthGuard, Authorize)
     @HttpCode(204)
     async deleteApp(@Param('appId') appId: string) {
         this.appService.deleteAppById(appId);

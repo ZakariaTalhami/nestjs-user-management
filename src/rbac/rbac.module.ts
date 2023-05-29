@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Permission, PermissionSchema } from './schemas/permission.schema';
 import { PermissionController } from './permission/permission.controller';
@@ -14,9 +14,10 @@ import { AppModule } from 'src/app/app.module';
             { name: Permission.name, schema: PermissionSchema },
             { name: Role.name, schema: RoleSchema },
         ]),
-        AppModule
+        forwardRef(() => AppModule)
     ],
     controllers: [PermissionController, RoleController],
     providers: [PermissionService, RoleService],
+    exports: [RoleService]
 })
 export class RbacModule {}

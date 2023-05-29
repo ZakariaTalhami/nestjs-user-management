@@ -8,6 +8,7 @@ import { Invite, InviteSchema } from './schemas/invite.schema';
 import { InviteService } from './invite.service';
 import { CommonModule } from 'src/common/common.module';
 import { JwtModule } from '@nestjs/jwt';
+import { RbacModule } from 'src/rbac/rbac.module';
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
             { name: Invite.name, schema: InviteSchema },
         ]),
         forwardRef(() => UsersModule),
+        forwardRef(() => RbacModule),
         CommonModule,
         JwtModule
     ],
