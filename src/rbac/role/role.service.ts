@@ -39,6 +39,18 @@ export class RoleService {
         return this.roleModel.findOne({ name });
     }
 
+    async getRoleById(
+        roleId: string,
+        populate: boolean = false
+    ): Promise<RoleDocument | null> {
+        const result = this.roleModel.findById(roleId);
+        if (populate) {
+            result.populate("permissions")
+        }
+
+        return result;
+    }
+
     async getAppRoleById(
         appId: string,
         roleId: string,
