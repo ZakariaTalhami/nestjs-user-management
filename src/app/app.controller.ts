@@ -71,6 +71,21 @@ export class AppController {
         );
     }
 
+    @Delete(':appId/users/:userId')
+    @RequirePermissions(Permissions.USER_DELETE)
+    @UseGuards(JwtAuthGuard, Authorize)
+    async deleteAppUser(
+        @Request() req,
+        @Param('appId') appId: string,
+        @Param('userId') userId: string
+    ) {
+        return this.appService.deleteAppUser(
+            appId,
+            userId,
+            req.user.id,
+        );
+    }
+
     @Post('invite/accept')
     @UseGuards(JwtAuthGuard, InvitationTokenAuth)
     async acceptUserInvitation(@Request() req) {

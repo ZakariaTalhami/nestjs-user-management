@@ -178,6 +178,29 @@ export class AppService {
         return JSON.parse(JSON.stringify(app.users[userIndex]));
     }
 
+    async deleteAppUser(appId: string, userId: string, invokerId: any) {
+        const app = await this.getByIdOrThrow(appId);
+        const userIndex = app.users.findIndex(
+            (appUser) => appUser.user?.toString() === userId,
+        );
+
+        if (userIndex === -1) {
+            throw new NotFoundException(
+                `User [${appId}] Not Found in App [${appId}]`,
+            );
+        }
+
+        if (app.users[userIndex].user?.toString() === invokerId) {
+            throw new UnauthorizedException(
+                'Not authorized to delete your own user in this app',
+            );
+        }
+
+        app.users.splice(userIndex, 1);
+
+        await app.save(); 
+    }
+
     async edit(appId: string, appDto: EditAppDTO) {
         return this.appModel.findOneAndUpdate(
             { _id: new Types.ObjectId(appId) },
