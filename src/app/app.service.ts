@@ -2,6 +2,7 @@ import {
     Injectable,
     NotFoundException,
     BadRequestException,
+    UnauthorizedException,
     Inject,
     forwardRef,
 } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { AppUserStatus } from 'src/common/enums';
 import { UsersService } from 'src/users/users.service';
 import { CreateAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
+import { EditAppUserDto } from './dtos/edit-app-user.dto';
 import { InviteUserToAppDto } from './dtos/invite-user.dto';
 import { InviteService } from './invite.service';
 import { App, AppDocument } from './schemas/app.schema';
@@ -116,14 +118,11 @@ export class AppService {
         return app;
     }
 
-    async acceptUserInvitation(
-        userId: string,
-        inviteId: string,
-    ) {
+    async acceptUserInvitation(userId: string, inviteId: string) {
         const user = await this.usersService.findUserById(userId);
         const invitation = await this.inviteService.findInvitationById(
             inviteId,
-            );
+        );
         const app = await this.getByIdOrThrow(invitation.app.toString());
 
         if (
@@ -138,23 +137,61 @@ export class AppService {
         invitation.acceptedDate = new Date();
         invitation.user = user._id;
 
-        const appUserIndex = app.users.findIndex(user => user.invitation.toString() === inviteId);
+        const appUserIndex = app.users.findIndex(
+            (user) => user.invitation.toString() === inviteId,
+        );
         app.users[appUserIndex].status = AppUserStatus.ACCEPTED;
         app.users[appUserIndex].user = user._id;
 
         await Promise.all([app.save(), invitation.save()]);
     }
 
+    async editAppUser(
+        appId: string,
+        userId: string,
+        appUserDto: EditAppUserDto,
+        invokerId: string,
+    ) {
+        const app = await this.getByIdOrThrow(appId);
+        const userIndex = app.users.findIndex(
+            (appUser) => appUser.user?.toString() === userId,
+        );
+
+        if (userIndex === -1) {
+            throw new NotFoundException(
+                `User [${appId}] Not Found in App [${appId}]`,
+            );
+        }
+
+        if (app.users[userIndex].user?.toString() === invokerId) {
+            throw new UnauthorizedException(
+                'Not authorized to update your own user in this app',
+            );
+        }
+
+        app.users[userIndex].role = new Types.ObjectId(appUserDto.role);
+
+        // WORKAROUND: JSON parse and stringify are used because the
+        // mongoose transformer interceptor is causing infinite loops
+        // as it doesnt recognize the embbeded Document as a mongoose
+        // model
+        return JSON.parse(JSON.stringify(app.users[userIndex]));
+    }
+
     async edit(appId: string, appDto: EditAppDTO) {
-        return this.appModel.findOneAndUpdate({ _id: new Types.ObjectId(appId) }, appDto, {
-            new: true,
-        });
+        return this.appModel.findOneAndUpdate(
+            { _id: new Types.ObjectId(appId) },
+            appDto,
+            {
+                new: true,
+            },
+        );
     }
 
     async deleteAppById(appId: string) {
         await this.appModel.findOneAndUpdate(
             {
-                _id: new Types.ObjectId(appId)
+                _id: new Types.ObjectId(appId),
             },
             {
                 isActive: false,

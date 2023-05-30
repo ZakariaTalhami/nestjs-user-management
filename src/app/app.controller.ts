@@ -19,6 +19,7 @@ import { Permissions } from 'src/rbac/permission/enums';
 import { AppService } from './app.service';
 import { CreateSecondaryAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
+import { EditAppUserDto } from './dtos/edit-app-user.dto';
 import { InviteUserToAppDto } from './dtos/invite-user.dto';
 import { InvitationTokenAuth } from './guards/invitation-token-auth.guard';
 
@@ -53,13 +54,27 @@ export class AppController {
         return this.appService.inviteUserToApp(appId, appDto, req.user.id);
     }
 
+    @Patch(':appId/users/:userId')
+    @RequirePermissions(Permissions.USER_EDIT)
+    @UseGuards(JwtAuthGuard, Authorize)
+    async editAppUser(
+        @Request() req,
+        @Param('appId') appId: string,
+        @Param('userId') userId: string,
+        @Body(new ValidationPipe()) appUserDto: EditAppUserDto,
+    ) {
+        return this.appService.editAppUser(
+            appId,
+            userId,
+            appUserDto,
+            req.user.id,
+        );
+    }
+
     @Post('invite/accept')
     @UseGuards(JwtAuthGuard, InvitationTokenAuth)
     async acceptUserInvitation(@Request() req) {
-        return this.appService.acceptUserInvitation(
-            req.user.id,
-            req.invite.id,
-        );
+        return this.appService.acceptUserInvitation(req.user.id, req.invite.id);
     }
 
     @Patch(':appId')
