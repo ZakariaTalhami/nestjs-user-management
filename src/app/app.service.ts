@@ -9,6 +9,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { AppUserStatus } from 'src/common/enums';
+import { Permissions } from 'src/rbac/permission/enums';
+import { RoleService } from 'src/rbac/role/role.service';
 import { UsersService } from 'src/users/users.service';
 import { CreateAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
@@ -24,6 +26,8 @@ export class AppService {
         @Inject(forwardRef(() => UsersService))
         private usersService: UsersService,
         private inviteService: InviteService,
+        @Inject(forwardRef(() => RoleService))
+        private roleService: RoleService,
     ) {}
 
     async create(appDto: CreateAppDto) {
@@ -186,7 +190,7 @@ export class AppService {
 
         if (userIndex === -1) {
             throw new NotFoundException(
-                `User [${appId}] Not Found in App [${appId}]`,
+                `User [${userId}] Not Found in App [${appId}]`,
             );
         }
 
@@ -220,5 +224,26 @@ export class AppService {
                 isActive: false,
             },
         );
+    }
+
+    async listUserPermissionsInApp(appId: string, userId: string): Promise<string[]> {
+        const app = await this.getByIdOrThrow(appId);
+        const appUser = app.users.find(
+            (appUser) => appUser.user?.toString() === userId,
+        );
+
+        if (app.owner.toString() === userId) {
+            return Object.values(Permissions);
+        }
+
+        if (!appUser) {
+            throw new NotFoundException(
+                `User [${userId}] Not Found in App [${appId}]`,
+            );
+        }
+
+        const role = await this.roleService.getRoleById(appUser.role.toString(), true);
+
+        return role.permissions.map((perms: any) => perms.name);
     }
 }

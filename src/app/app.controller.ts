@@ -109,4 +109,13 @@ export class AppController {
     async deleteApp(@Param('appId') appId: string) {
         this.appService.deleteAppById(appId);
     }
+
+    @Get(':appId/permissions')
+    @UseGuards(JwtAuthGuard)
+    async getAppUserPermissions(
+        @Request() req,
+        @Param('appId') appId: string
+    ) {
+        return this.appService.listUserPermissionsInApp(appId, req.user.id);
+    }
 }
