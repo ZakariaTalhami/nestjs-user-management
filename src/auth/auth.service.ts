@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { compare as comparePassword } from 'bcrypt';
 import { ResetPasswordConstants } from './constants';
@@ -12,6 +12,8 @@ import { EmailService } from 'src/common/email.service';
 
 @Injectable()
 export class AuthService {
+    private logger = new Logger(AuthService.name)
+
   constructor(
         private usersService: UsersService,
         private tokenService: TokenService,
@@ -19,12 +21,16 @@ export class AuthService {
     ) {}
     
     async validateUser(email: string, password: string) {
+        this.logger.log(email, password);
         const user = await this.usersService.findUserByEmail(email);
 
+        this.logger.log(`Found User [${user.id}]`);
         const isUserPasswordVerified = user && await comparePassword(
             password,
             user?.password,
         );
+
+        this.logger.log("isUserPasswordVerified", isUserPasswordVerified)
         if (isUserPasswordVerified) {
             return user;
         }
