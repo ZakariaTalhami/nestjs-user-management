@@ -3,11 +3,13 @@ import { AppModule } from './app.module';
 import { SanitizeMongooseModelInterceptor } from 'nestjs-mongoose-exclude';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalInterceptors(new SanitizeMongooseModelInterceptor({
-    excludeMongooseId: false,
-    excludeMongooseV: true
-}))
-  await app.listen(3000);
+    const app = await NestFactory.create(AppModule, { cors: true });
+    app.useGlobalInterceptors(
+        new SanitizeMongooseModelInterceptor({
+            excludeMongooseId: false,
+            excludeMongooseV: true,
+        }),
+    );
+    await app.listen(3000);
 }
 bootstrap();
