@@ -2,7 +2,7 @@ import { Controller, Post, Request, UseGuards, Body, ValidationPipe } from '@nes
 import { ExtractJwt } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto, ResetPasswordDto } from './dtos/forgot-password.dto';
-import { JWTRefreshAuthGuard, JWTResetPasswordAuthGuard, LocalAuthGuard } from './guards';
+import { JwtAuthGuard, JWTRefreshAuthGuard, JWTResetPasswordAuthGuard, LocalAuthGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -43,5 +43,13 @@ export class AuthController {
     return {
       message: "Your password has been Reset Successfully"
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('validate')
+  async validate() {
+    return {
+      isValid: true
+    };
   }
 }
