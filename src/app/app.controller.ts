@@ -77,13 +77,9 @@ export class AppController {
     async deleteAppUser(
         @Request() req,
         @Param('appId') appId: string,
-        @Param('userId') userId: string
+        @Param('userId') userId: string,
     ) {
-        return this.appService.deleteAppUser(
-            appId,
-            userId,
-            req.user.id,
-        );
+        return this.appService.deleteAppUser(appId, userId, req.user.id);
     }
 
     @Post('invite/accept')
@@ -112,10 +108,16 @@ export class AppController {
 
     @Get(':appId/permissions')
     @UseGuards(JwtAuthGuard)
-    async getAppUserPermissions(
-        @Request() req,
-        @Param('appId') appId: string
-    ) {
+    async getAppUserPermissions(@Request() req, @Param('appId') appId: string) {
         return this.appService.listUserPermissionsInApp(appId, req.user.id);
+    }
+
+    @Post(':appId/current')
+    @UseGuards(JwtAuthGuard)
+    async setCurrentUserApp(@Request() req, @Param('appId') appId: string) {
+        return this.appService.setCurrentUserApp(
+            new Types.ObjectId(appId),
+            new Types.ObjectId(req.user.id),
+        );
     }
 }
