@@ -18,11 +18,14 @@ import { EditAppUserDto } from './dtos/edit-app-user.dto';
 import { InviteUserToAppDto } from './dtos/invite-user.dto';
 import { InviteService } from './invite.service';
 import { App, AppDocument } from './schemas/app.schema';
+import { CurrentApp, CurrentAppDocument } from './schemas/current-app.schema';
 
 @Injectable()
 export class AppService {
     constructor(
         @InjectModel(App.name) private appModel: Model<AppDocument>,
+        @InjectModel(CurrentApp.name)
+        private currentAppModel: Model<CurrentAppDocument>,
         @Inject(forwardRef(() => UsersService))
         private usersService: UsersService,
         private inviteService: InviteService,
@@ -31,7 +34,9 @@ export class AppService {
     ) {}
 
     async create(appDto: CreateAppDto) {
-        return this.appModel.create(appDto);
+        const app = await this.appModel.create(appDto);
+        await this.setCurrentUserApp(app._id, app.owner);
+        return app;
     }
 
     async getById(appId: string) {
@@ -202,7 +207,7 @@ export class AppService {
 
         app.users.splice(userIndex, 1);
 
-        await app.save(); 
+        await app.save();
     }
 
     async edit(appId: string, appDto: EditAppDTO) {
@@ -226,7 +231,25 @@ export class AppService {
         );
     }
 
-    async listUserPermissionsInApp(appId: string, userId: string): Promise<string[]> {
+    async setCurrentUserApp(appId: Types.ObjectId, userId: Types.ObjectId) {
+        return this.currentAppModel.findOneAndUpdate(
+            {
+                user: userId,
+            },
+            {
+                app: appId,
+            },
+            {
+                new: true,
+                upsert: true,
+            },
+        );
+    }
+
+    async listUserPermissionsInApp(
+        appId: string,
+        userId: string,
+    ): Promise<string[]> {
         const app = await this.getByIdOrThrow(appId);
         const appUser = app.users.find(
             (appUser) => appUser.user?.toString() === userId,
@@ -242,7 +265,10 @@ export class AppService {
             );
         }
 
-        const role = await this.roleService.getRoleById(appUser.role.toString(), true);
+        const role = await this.roleService.getRoleById(
+            appUser.role.toString(),
+            true,
+        );
 
         return role.permissions.map((perms: any) => perms.name);
     }
