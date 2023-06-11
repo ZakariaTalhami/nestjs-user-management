@@ -9,12 +9,14 @@ import { InviteService } from './invite.service';
 import { CommonModule } from 'src/common/common.module';
 import { JwtModule } from '@nestjs/jwt';
 import { RbacModule } from 'src/rbac/rbac.module';
+import { CurrentApp, CurrentAppSchema } from './schemas/current-app.schema';
 
 @Module({
     imports: [
         MongooseModule.forFeature([
             { name: App.name, schema: AppSchema },
             { name: Invite.name, schema: InviteSchema },
+            { name: CurrentApp.name, schema: CurrentAppSchema },
         ]),
         forwardRef(() => UsersModule),
         forwardRef(() => RbacModule),
