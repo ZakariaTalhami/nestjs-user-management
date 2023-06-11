@@ -57,7 +57,7 @@ export class AppService {
     }
 
     async findAllUserApps(userId: string) {
-        return this.appModel.find(
+        const appsQuery = this.appModel.find(
             {
                 $or: [
                     { owner: new Types.ObjectId(userId) },
@@ -75,6 +75,15 @@ export class AppService {
                 },
             },
         );
+
+        const currentAppQuery = this.currentAppModel.findOne({
+            user: new Types.ObjectId(userId),
+        });
+
+        // Await DB queries
+        const [apps, currentApp] = await Promise.all([appsQuery, currentAppQuery]);
+
+        return {apps, currentApp};
     }
 
     async inviteUserToApp(
