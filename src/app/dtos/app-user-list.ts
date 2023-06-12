@@ -1,3 +1,4 @@
+import { AppUserStatus } from 'src/common/enums';
 import { AppUser } from '../schemas/app-user.schema';
 
 export class AppUserListItem {
@@ -12,6 +13,7 @@ export class AppUserListItem {
         name: string;
     };
     addedDate: Date;
+    status: AppUserStatus;
 }
 
 export class AppUserList {
@@ -33,14 +35,15 @@ export class AppUserList {
                 displayName: (user.role as any).displayName,
                 description: (user.role as any).description,
             };
-            (userItem.user = {
+            userItem.user = {
                 id: (user.user as any)?.id,
                 email:
                     (user.user as any)?.email ||
                     (user.invitation as any)?.email,
                 name: (user.user as any)?.name || '',
-            }),
-                (userItem.addedDate = user.addedDate);
+            };
+            userItem.addedDate = user.addedDate;
+            userItem.status = user.status;
 
             return userItem;
         });
