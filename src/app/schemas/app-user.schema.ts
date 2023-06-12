@@ -17,7 +17,7 @@ export class AppUser {
 
     @Prop({
         type: Types.ObjectId,
-        ref: 'roles',
+        ref: 'Role',
         required: true,
     })
     role: Types.ObjectId;

@@ -43,6 +43,16 @@ export class AppController {
         return this.appService.create(createAppDto);
     }
 
+    @Get(':appId/users')
+    @RequirePermissions(Permissions.USER_READ)
+    @UseGuards(JwtAuthGuard, Authorize)
+    async listAppUsers(
+        @Param('appId') appId: string
+    ) {
+        return this.appService.listAppUsers(appId);
+    }
+
+
     @Post(':appId/users')
     @RequirePermissions(Permissions.USER_INVITE)
     @UseGuards(JwtAuthGuard, Authorize)

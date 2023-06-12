@@ -12,6 +12,7 @@ import { AppUserStatus } from 'src/common/enums';
 import { Permissions } from 'src/rbac/permission/enums';
 import { RoleService } from 'src/rbac/role/role.service';
 import { UsersService } from 'src/users/users.service';
+import { AppUserList } from './dtos/app-user-list';
 import { CreateAppDto } from './dtos/create-app';
 import { EditAppDTO } from './dtos/edit-app';
 import { EditAppUserDto } from './dtos/edit-app-user.dto';
@@ -81,9 +82,24 @@ export class AppService {
         });
 
         // Await DB queries
-        const [apps, currentApp] = await Promise.all([appsQuery, currentAppQuery]);
+        const [apps, currentApp] = await Promise.all([
+            appsQuery,
+            currentAppQuery,
+        ]);
 
-        return {apps, currentApp};
+        return { apps, currentApp };
+    }
+
+    async listAppUsers(appId: string) {
+        const app = await this.appModel
+            .findOne({
+                _id: new Types.ObjectId(appId),
+            })
+            .populate('users.user', ['email', 'name'])
+            .populate('users.role')
+            .populate('users.invitation');
+
+        return new AppUserList(app.users).getUserList();
     }
 
     async inviteUserToApp(
