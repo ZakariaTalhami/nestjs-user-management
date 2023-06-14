@@ -205,6 +205,8 @@ export class AppService {
 
         app.users[userIndex].role = new Types.ObjectId(appUserDto.role);
 
+        await app.save();
+
         // WORKAROUND: JSON parse and stringify are used because the
         // mongoose transformer interceptor is causing infinite loops
         // as it doesnt recognize the embbeded Document as a mongoose
